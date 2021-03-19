@@ -72,24 +72,24 @@ fun TimerButtons(timerState: TimerViewModel) {
         Box {
             if (visible) {
                 IconButton(onClick = {
-                    timerState.pauseTimer()
+                    timerState.buttonSelection()
                     visible = !visible
                 }) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_pause),
-                        contentDescription = "pause button",
+                        painter = painterResource(R.drawable.ic_play),
+                        contentDescription = "play button",
 
                         )
                 }
 
             } else {
                 IconButton(onClick = {
-                    timerState.resumeTimer()
+                    timerState.buttonSelection()
                     visible = !visible
                 }) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_play),
-                        contentDescription = "play button",
+                        painter = painterResource(R.drawable.ic_pause),
+                        contentDescription = "pause button",
 
                         )
                 }
