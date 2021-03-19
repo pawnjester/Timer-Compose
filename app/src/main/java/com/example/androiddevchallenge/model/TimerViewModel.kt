@@ -2,7 +2,6 @@ package com.example.androiddevchallenge.model
 
 import android.os.Build
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +14,6 @@ class TimerViewModel : ViewModel() {
     val viewState: LiveData<TimerModel> = _viewState
 
     var countDown: CountDownTimer? = null
-    var timeCount: Long = 0L
 
     init {
         _viewState.value = TimerModel()
@@ -28,8 +26,8 @@ class TimerViewModel : ViewModel() {
             override fun onTick(seconds: Long) {
                 _viewState.value = TimerModel(
                     timeDuration = Duration.ofMillis(seconds),
-                    secondsLeft = seconds,
-                    status = Status.RUNNING
+                    status = Status.RUNNING,
+                    toggle = ButtonState.PAUSE
                 )
             }
 
@@ -37,7 +35,8 @@ class TimerViewModel : ViewModel() {
             override fun onFinish() {
                 _viewState.value = _viewState.value!!.copy(
                     timeDuration = Duration.ZERO,
-                    status = Status.FINISHED
+                    status = Status.FINISHED,
+                    toggle = ButtonState.START
                 )
             }
 
@@ -48,42 +47,35 @@ class TimerViewModel : ViewModel() {
     private fun pauseTimer() {
         countDown?.cancel()
         _viewState.value = _viewState.value!!.copy(
-            status = Status.STARTED
+            status = Status.STARTED,
+            toggle = ButtonState.RESUME
         )
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun stopTimer() {
+    fun resetTimer() {
         countDown?.cancel()
         _viewState.value = _viewState.value!!.copy(
             status = Status.FINISHED,
-            timeDuration = Duration.ZERO
+            timeDuration = Duration.ZERO,
+            toggle = ButtonState.START
         )
     }
 
     fun buttonSelection() {
         val state = _viewState.value
 
-        when(state?.status) {
-             Status.STARTED -> {
-                 startTime(state.timeDuration)
-             }
+        when (state?.status) {
+            Status.STARTED -> {
+                startTime(state.timeDuration)
+            }
             Status.RUNNING -> {
                 pauseTimer()
             }
             Status.FINISHED -> {
-                Log.e("MMM", "here")
-                stopTimer()
+                resetTimer()
             }
         }
 
     }
-
-    fun resumeTimer() {
-        Log.e(">RESUME", _viewState.value.toString())
-        timeCount = _viewState.value!!.secondsLeft
-        countDown?.start()
-    }
-
-
 }

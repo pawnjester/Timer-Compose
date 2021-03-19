@@ -4,10 +4,14 @@ import java.time.Duration
 
 data class TimerModel(
     val timeDuration: Duration = Duration.ofSeconds(30),
-    val secondsLeft : Long = 0L,
-    val status: Status = Status.STARTED
+    val status: Status = Status.STARTED,
+    val toggle: ButtonState = ButtonState.START
 )
 
 enum class Status {
     STARTED, RUNNING, FINISHED
+}
+
+enum class ButtonState {
+    START, PAUSE, RESUME
 }

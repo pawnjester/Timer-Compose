@@ -1,14 +1,12 @@
 package com.example.androiddevchallenge.ui.theme
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -17,14 +15,15 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.R
+import com.example.androiddevchallenge.model.ButtonState
 import com.example.androiddevchallenge.model.TimerModel
 import com.example.androiddevchallenge.model.TimerViewModel
 import com.example.androiddevchallenge.ui.ext.format
@@ -37,12 +36,15 @@ fun TimerHomeScreen(viewModel: TimerViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
+            .fillMaxHeight()
+            .background(Color.Black),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TimerHeader()
+        Spacer(modifier = Modifier.height(25.dp))
         TimerTopSection(timer.timeDuration.format())
+        Spacer(modifier = Modifier.height(25.dp))
         TimerButtons(viewModel)
     }
 }
@@ -56,50 +58,88 @@ fun TimerTopSection(time: String) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = time, fontSize = 60.sp)
+        Text(text = time, fontSize = 60.sp, color = Color.White)
     }
 }
 
 @ExperimentalAnimationApi
 @Composable
 fun TimerButtons(timerState: TimerViewModel) {
+    val toggle by timerState.viewState.observeAsState()
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        var visible by remember { mutableStateOf(true) }
-        Box {
-            if (visible) {
-                IconButton(onClick = {
-                    timerState.buttonSelection()
-                    visible = !visible
-                }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_play),
-                        contentDescription = "play button",
-
-                        )
-                }
-
-            } else {
-                IconButton(onClick = {
-                    timerState.buttonSelection()
-                    visible = !visible
-                }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_pause),
-                        contentDescription = "pause button",
-
-                        )
-                }
-
-            }
-
+        IconButton(onClick = {
+            timerState.resetTimer()
+        }) {
+            Icon(painter = painterResource(R.drawable.ic_stop), contentDescription = "stop button")
         }
 
-        IconButton(onClick = { timerState.stopTimer() }) {
-            Icon(painter = painterResource(R.drawable.ic_stop), contentDescription = "stop button")
+        ButtonLayout(timerState)
+    }
+}
+
+@Composable
+fun ButtonLayout(timerState: TimerViewModel) {
+    val toggle by timerState.viewState.observeAsState()
+    var text = ""
+    var color: Color = MaterialTheme.colors.primaryVariant
+    var textColor : Color = Color.White
+    when (toggle?.toggle) {
+        ButtonState.START -> {
+            text = "Start"
+            color = MaterialTheme.colors.primaryVariant
+            textColor = Color.White
+        }
+        ButtonState.PAUSE -> {
+            text = "Pause"
+            color = MaterialTheme.colors.secondary
+            textColor = Color.Black
+        }
+        ButtonState.RESUME -> {
+            text = "Resume"
+            color = MaterialTheme.colors.secondaryVariant
+            textColor = Color.Black
+        }
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(40.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Box(modifier = Modifier
+            .clickable {
+                timerState.resetTimer()
+            }
+            .padding(30.dp)
+            .size(80.dp)
+            .clip(CircleShape)
+            .background(Color.DarkGray)
+            .fillMaxWidth()) {
+            Text(
+                text = "Reset", color = Color.White, modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(8.dp)
+            )
+        }
+
+        Box(modifier = Modifier
+            .clickable {
+                timerState.buttonSelection()
+            }
+            .padding(10.dp)
+            .size(80.dp)
+            .clip(CircleShape)
+            .background(color)
+            .fillMaxWidth()) {
+            Text(
+                text = text, color = textColor, modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(8.dp)
+            )
         }
     }
 }
@@ -109,10 +149,12 @@ fun TimerHeader() {
     Text(
         text = "Count Down Timer",
         fontSize = 30.sp,
+        color = Color.White,
         fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(32.dp),
+            .padding(top = 80.dp),
         style = MaterialTheme.typography.h4
     )
 }
