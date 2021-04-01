@@ -26,6 +26,7 @@ class TimerViewModel : ViewModel() {
             override fun onTick(seconds: Long) {
                 _viewState.value = TimerModel(
                     timeDuration = Duration.ofMillis(seconds),
+                    remainingTime = seconds,
                     status = Status.RUNNING,
                     toggle = ButtonState.PAUSE
                 )

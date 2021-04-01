@@ -4,6 +4,7 @@ import java.time.Duration
 
 data class TimerModel(
     val timeDuration: Duration = Duration.ofSeconds(30),
+    val remainingTime: Long = timeDuration.toMillis(),
     val status: Status = Status.STARTED,
     val toggle: ButtonState = ButtonState.START
 )

@@ -3,6 +3,8 @@ package com.example.androiddevchallenge.ui.theme
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,14 +55,23 @@ fun TimerHomeScreen(viewModel: TimerViewModel) {
     ) {
         TimerHeader()
         Spacer(modifier = Modifier.height(25.dp))
-        TimerTopSection(timer.timeDuration.format())
+        TimerTopSection(timer.timeDuration.format(), timer.remainingTime)
         Spacer(modifier = Modifier.height(25.dp))
         TimerButtons(viewModel)
     }
 }
 
 @Composable
-fun TimerTopSection(time: String) {
+fun TimerTopSection(time: String, remainingTime: Long) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateColor(
+        initialValue = Color.Red,
+        targetValue = Color.Green,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,7 +79,11 @@ fun TimerTopSection(time: String) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = time, fontSize = 60.sp, color = Color.White)
+        Text(
+            text = time,
+            fontSize = 60.sp,
+            color = if (isTimeLessThan10Seconds(remainingTime)) alpha else Color.White
+        )
     }
 }
 
@@ -168,3 +183,5 @@ fun TimerHeader() {
         style = MaterialTheme.typography.h4
     )
 }
+
+private fun isTimeLessThan10Seconds(time: Long) = time < 10000L
