@@ -5,7 +5,7 @@
 - Jetpack Compose
 
 ## Screen Shots
-<img src="/results/screen_1.jpg" width="200">&emsp;<img src="/results/screen_2.jpg" width="200"> &emsp; <img src="/results/screen_3.jpg" width="200"> <br/>
+<img src="/results/screen_1.JPG" width="200">&emsp;<img src="/results/screen_2.JPG" width="200"> &emsp; <img src="/results/screen_3.JPG" width="200"> <br/>
 
 ## License
 ```
